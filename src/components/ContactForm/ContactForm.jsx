@@ -1,66 +1,70 @@
-import css from "./ContactForm.module.css";
+import { useDispatch, useSelector } from "react-redux";
+import { addContact } from "../../redux/contactsOps";
+import { selectContacts } from "../../redux/contactsSlice";
+import { useId } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
-import { useDispatch } from "react-redux";
-import { addContact } from "/src/redux/contactsSlice";
 import * as Yup from "yup";
+import styles from "./ContactForm.module.css";
 
-const ContactFormSchema = Yup.object().shape({
-  name: Yup.string()
-    .min(3, "Too Short!")
-    .max(50, "Too Long!")
-    .required("Required"),
-  number: Yup.string()
-    .min(3, "Too Short!")
-    .max(50, "Too Long!")
-    .required("Required"),
+
+const contactFormSchema = Yup.object().shape({
+    name: Yup.string()
+        .min(3, "Name is too short! Minimum 3 characters.")
+        .max(50, "Name is too long! Maximum 50 characters.")
+        .required("Name is required."),
+    number: Yup.string()
+        .min(3, "Number is too short! Minimum 3 characters.")
+        .max(50, "Number is too long! Maximum 50 characters.")
+        .required("Phone number is required."),
 });
 
 const initialValues = {
-  name: "",
-  number: "",
+    name: "",
+    number: "",
 };
 
-const ContactForm=()=> {
-  const dispatch = useDispatch();
+const ContactForm = () => {
+    const dispatch = useDispatch();
+    const contacts = useSelector(selectContacts);
+    const nameFieldId = useId();
+    const phoneFieldId = useId();
 
-  const submitHandler = (values, { resetForm }) => {
-    dispatch(addContact(values));
-    resetForm();
-  };
+    const handleSubmit = (values, actions) => {
+        const newContact = {
+            name: values.name,
+            number: values.number
+        };
 
-  return (
-    <Formik
-      initialValues={initialValues}
-      onSubmit={submitHandler}
-      validationSchema={ContactFormSchema}
-    >
-      <Form className={css["contact-form"]}>
-        <label>
-          Name
-          <Field className="inputField" type="text" name="name" />
-          <ErrorMessage
-            name="name"
-            component="span"
-            className={css["error-message"]}
-          />
-        </label>
+        if (contacts.some(contact => contact.name.toLowerCase() === newContact.name.toLowerCase())) {
+            alert(`${newContact.name} is already in contacts.`);
+            return;
+        }
 
-        <label>
-          Number
-          <Field className="inputField" type="text" name="number" />
-          <ErrorMessage
-            name="number"
-            component="span"
-            className={css["error-message"]}
-          />
-        </label>
+        dispatch(addContact(newContact));
+        actions.resetForm();
+    };
 
-        <button className={`button ${css["submit-btn"]}`} type="submit">
-          Add contact
-        </button>
-      </Form>
-    </Formik>
-  );
-}
+    return (
+        <Formik
+            initialValues={initialValues}
+            onSubmit={handleSubmit}
+            validationSchema={contactFormSchema}
+        >
+            <Form className={styles.form}>
+                <div className={styles.inputGroup}>
+                    <label htmlFor="name">Name</label>
+                    <Field type="text" name="name" id={nameFieldId} />
+                    <ErrorMessage name="name" component="span" className={styles.error} />
+                </div>
+                <div className={styles.inputGroup}>
+                    <label htmlFor="number">Phone</label>
+                    <Field type="text" name="number" id={phoneFieldId} />
+                    <ErrorMessage name="number" component="span" className={styles.error} />
+                </div>
+                <button type="submit" className={styles.submitBtn}>Add contact</button>
+            </Form>
+        </Formik>
+    );
+};
 
 export default ContactForm;

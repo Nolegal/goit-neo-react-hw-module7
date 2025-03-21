@@ -1,19 +1,25 @@
-.contact-form {
-    border: 2px solid;
-    border-radius: 10px;
-    width: fit-content;
-    padding: 20px;
-    margin: 20px 0;
-  }
-  
-  .submit-btn {
-    font-size: 18px;
-    padding: 10px 20px;
-    background-color: #1d43ca;
-  }
-  
-  .error-message {
-    display: block;
-    color: #ff0000d8;
-    font-size: 14px;
-  }
+.form {
+  border: 2px solid;
+  border-radius: 10px;
+  width: fit-content;
+  padding: 20px;
+  margin: 20px 0;
+}
+
+.submitBtn {
+  font-size: 18px;
+  padding: 10px 20px;
+  margin: 15px;
+  background-color:#FFFF24;
+}
+
+.error-message {
+  display: block;
+  color: #ff0000d8;
+  font-size: 14px;
+}
+
+.inputGroup{
+  justify-content: center;
+  padding-top: 15px;
+}
